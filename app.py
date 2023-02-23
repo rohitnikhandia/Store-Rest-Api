@@ -1,14 +1,19 @@
+import os
+
 from flask import Flask, jsonify
 from flask_smorest import Api
+from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
+
 from resources.home import blp as home_blueprint
 from resources.item import blp as ItemBlueprint
 from resources.store import blp as StoreBlueprint
 from resources.tag import blp as TagBlueprint
 from resources.user import blp as UserBlueprint
-from flask_jwt_extended import JWTManager
+
+
 from blocklist import BLOCKLIST
 from db import db
-import os
 
 def create_app(db_url=None):
     app = Flask(__name__)
@@ -24,6 +29,7 @@ def create_app(db_url=None):
     app.config["SQLALCHEMY_TRACK_MODIFIACTIONS"] = False
 
     db.init_app(app)
+    migrate = Migrate(app, db)
     api = Api(app)
 
     app.config["JWT_SECRET_KEY"] = "290610807684239955136589526486617063319"
@@ -70,8 +76,8 @@ def create_app(db_url=None):
 
 
 
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    #     db.create_all()
 
     api.register_blueprint(home_blueprint)
     api.register_blueprint(ItemBlueprint)
